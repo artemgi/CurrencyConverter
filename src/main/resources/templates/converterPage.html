@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Style -->
+    <link rel="stylesheet" href="/css/form.css" type="text/css">
+    <title>Конвертация</title>
+</head>
+<body class="text-center">
+<nav class="navbar navbar-light" style="background-color: #bcd6bd;">
+    <div class="container-fluid">
+        <a class="navbar-brand font-monospace" href="#">Конвертер валют</a>
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Выйти</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container text-center">
+    <div class="row align-items-start">
+        <div class="col-md-4">
+            <form>
+                <h1>Конвертер валют</h1>
+
+                <div class="form-group">
+                    <select id="sourceCurrency" class="form-select"></select>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="sourceCurrencyAmount" name="sourceCurrency" class="form-control" placeholder="0.00"/>
+                </div>
+
+                <div class="form-group">
+                    <select id="targetCurrency" class="form-select"></select>
+                </div>
+
+                <div class="form-group">
+                    <p type="number" id="targetCurrencyAmount" class="form-control text-left">0.00</p>
+                </div>
+
+                <div class="form-group row justify-content-end">
+                    <button class="btn btn-outline-primary " type="button" id="button-addon2" onClick="convert()">Конвертировать</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8">
+            <h2 class="top-name center-block text-center">История операций</h2>
+            <table id="operations" class="table table-striped">
+                <thead class="thead">
+                <tr>
+                    <th scope="col">Исходная валюта</th>
+                    <th scope="col">Целевая валюта</th>
+                    <th scope="col">Исходная сумма</th>
+                    <th scope="col">Полученная сумма</th>
+                    <th scope="col">Дата</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="operations : ${operations}">
+                    <td th:text="${operations.sourceCurrency}"></td>
+                    <td th:text="${operations.targetCurrency}"></td>
+                    <td th:text="${operations.sourceAmount}"></td>
+                    <td th:text="${operations.targetAmount}"></td>
+                    <td th:text="${operations.date}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/js/currency-converter.js"></script>
+<script src="/js/renderCurrency.js"></script>
+
+</body>
+</html>

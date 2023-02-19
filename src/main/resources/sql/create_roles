@@ -1,0 +1,6 @@
+Insert into role (id, name)
+values (0, 'ROLE_USER');
+
+Insert into role (id, name)
+values (1, 'ROLE_ADMIN')
+

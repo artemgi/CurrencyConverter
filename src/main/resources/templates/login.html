@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">    <!-- Style -->
+    <link rel="stylesheet" href="/css/form.css" type="text/css">
+    <title>Авторизация</title>
+</head>
+<nav class="navbar navbar-light" style="background-color: #bcd6bd;">
+    <div class="container-fluid">
+        <a class="navbar-brand font-monospace" href="#">Конвертер валют</a>
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="nav-link" href="/registration">Регистрация</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<body class="text-center">
+<main class="form-signin">
+    <div th:if="${param.error}">
+        Логин или пароль не подходит
+    </div>
+    <div th:if="${param.logout}">
+        You have been logged out.
+    </div>
+    <form action="/login" method="post">
+        <h1 class="h3 mb-3 fw-normal">Авторизация</h1>
+        <div class="form-floating">
+            <input type="text" id="username" name="username" class="form-control" placeholder="username"/>
+        </div>
+        <div class="form-floating">
+            <input type="password" id="password" name="password" autocomplete="on" class="form-control" placeholder="Пароль"/>
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+        </div>
+        <input type="submit" value="Войти" class="w-100 btn btn-lg btn-primary my-4"/>
+    </form>
+</main>
+</body>
+</html>
