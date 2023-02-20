@@ -1,56 +1,75 @@
 package com.example.currencyconverter.service;
 
+import com.example.currencyconverter.dao.ExchangeRatesRepository;
+import com.example.currencyconverter.dto.ConversionCurrencyDTO;
+import com.example.currencyconverter.model.Currency;
+import com.example.currencyconverter.model.ExchangeRates;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.stereotype.Service;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.net.URL;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@Service
+@ExtendWith(MockitoExtension.class)
 class CurrencyServiceTest {
-	@Autowired
-	CurrencyService currencyService;
+	public static final Date DATE = new Date();
+	@Mock
+	private ExchangeRatesRepository exchangeRatesRepository;
+	@Mock
+	private CurrencyService underTest;
+	@BeforeEach
+	void setUp() {
+		MockitoAnnotations.openMocks(this);
+		underTest =  new CurrencyService(exchangeRatesRepository);
+	}
 
 	@Test
-	void parseCurrencyForXMLTest() throws Exception {
-		//currencyService.parseCurrencyForXML();
-//		// Arrange
-//		URL url = new URL("http://www.cbr.ru/scripts/XML_daily.asp");
-//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//		Document doc = dBuilder.parse(url.openStream());
-//		doc.getDocumentElement().normalize();
-//
-//		NodeList nodeList = doc.getElementsByTagName("Valute");
-//
-//		// Act and Assert
-//		for (int i = 0; i < nodeList.getLength(); i++) {
-//			Element element = (Element) nodeList.item(i);
-//			String charCode = element.getElementsByTagName("CharCode").item(0).getTextContent();
-//			switch (charCode) {
-//				case "USD":
-//					assertEquals("$", charCode);
-//					break;
-//				case "EUR":
-//					assertEquals("€", charCode);
-//					break;
-//				case "JPY":
-//					assertEquals("¥", charCode);
-//					break;
-//				default:
-//					// Проверяем, что у всех элементов Valute charCode имеет ожидаемое значение
-//					assertEquals(3, charCode.length());
-//					break;
-//			}
-//		}
-//	}
+	void convertCurrency() throws Exception {
+		ConversionCurrencyDTO conversionCurrencyDTO = new ConversionCurrencyDTO();
+		conversionCurrencyDTO.setSourceCurrencyCode("USD");
+		conversionCurrencyDTO.setTargetCurrencyCode("EUR");
+		conversionCurrencyDTO.setSourceAmount(new BigDecimal("10"));
+
+		Currency currencySource = new Currency();
+		currencySource.setCharCode("USD");
+		currencySource.setNominal(1);
+		currencySource.setValue(new BigDecimal("74.2222"));
+		Currency currencyTarget = new Currency();
+		currencyTarget.setCharCode("EUR");
+		currencyTarget.setNominal(1);
+		currencyTarget.setValue(new BigDecimal("79.1111"));
+		Set<Currency> currencies = new HashSet<>();
+		currencies.add(currencySource);
+		currencies.add(currencyTarget);
+		ExchangeRates exchangeRates = new ExchangeRates();
+		exchangeRates.setCurrencies(currencies);
+
+		when(exchangeRatesRepository.findByDate(any())).thenReturn(exchangeRates);
+
+		BigDecimal convertResult = underTest.convertCurrency(conversionCurrencyDTO);
+
+
+		assertEquals(new BigDecimal("9.3820"), convertResult);
+	}
+
+	@Test
+	void getAllCurrenciesByCurrentDate() {
+		ExchangeRates exchangeRates = mock(ExchangeRates.class);
+		when(exchangeRatesRepository.findByDate(any())).thenReturn(exchangeRates);
+		when(exchangeRates.getCurrencies()).thenReturn(any());
+		underTest.getAllCurrenciesByCurrentDate();
+		verify(exchangeRatesRepository).findByDate(any());
 	}
 }
-

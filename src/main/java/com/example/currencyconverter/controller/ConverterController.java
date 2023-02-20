@@ -6,6 +6,7 @@ import com.example.currencyconverter.model.Currency;
 import com.example.currencyconverter.model.OperationHistory;
 import com.example.currencyconverter.model.User;
 import com.example.currencyconverter.service.CurrencyService;
+import com.example.currencyconverter.service.OperationHistoryService;
 import com.example.currencyconverter.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ConverterController {
 	private final CurrencyService currencyService;
+	private final OperationHistoryService operationHistoryService;
 	private final UserService userService;
 
 	@GetMapping("/")
@@ -34,7 +36,7 @@ public class ConverterController {
 
 	@GetMapping("/converterPage")
 	public String converter(Model model) {
-		List<OperationHistory> operations = currencyService.getAllOperationHistory();
+		List<OperationHistory> operations = operationHistoryService.getAllOperationHistory();
 		model.addAttribute("operations", operations);
 		return "converterPage";
 	}
@@ -45,7 +47,7 @@ public class ConverterController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findUserByUsername(auth.getName());
 		if (user != null) {
-			currencyService.saveOperation(user, conversionCurrencyDTO, targetCurrencyAmount);
+			operationHistoryService.saveOperation(user, conversionCurrencyDTO, targetCurrencyAmount);
 		}
 		return new ResponseEntity<>(targetCurrencyAmount.toString(), HttpStatus.OK);
 	}

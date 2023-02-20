@@ -1,0 +1,1 @@
+RUN echo "192.168.0.1 www.cbr.ru" >> /etc/hosts
