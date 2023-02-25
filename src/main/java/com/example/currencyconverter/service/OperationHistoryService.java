@@ -8,16 +8,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class OperationHistoryService {
 	private final OperationHistoryRepository operationHistoryRepository;
-	public List<OperationHistory> getAllOperationHistory() {
-		return operationHistoryRepository.findAll();
+	public List<OperationHistory> getOperationHistoryByUser(User user) {
+		return operationHistoryRepository.findByUser(user);
 	}
-
 	public void saveOperation(User user, ConversionCurrencyDTO conversionCurrencyDTO, BigDecimal targetCurrencyAmount) {
 		OperationHistory operationHistory = new OperationHistory();
 		operationHistory.setUser(user);
@@ -25,6 +25,7 @@ public class OperationHistoryService {
 		operationHistory.setTargetCurrency(conversionCurrencyDTO.getTargetCurrencyCode());
 		operationHistory.setSourceAmount(conversionCurrencyDTO.getSourceAmount());
 		operationHistory.setTargetAmount(targetCurrencyAmount);
+		operationHistory.setDate(new Date());
 		operationHistoryRepository.save(operationHistory);
 	}
 

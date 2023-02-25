@@ -6,6 +6,7 @@ import com.example.currencyconverter.model.Currency;
 import com.example.currencyconverter.model.ExchangeRates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -108,8 +109,12 @@ public class CurrencyService {
 		return exchangeRates;
 	}
 
+	@Cacheable(value = "currencies")
 	public Set<Currency> getAllCurrenciesByCurrentDate() {
 		ExchangeRates exchangeRates = exchangeRatesRepository.findByDate(getDateWithoutTimeUsingCalendar());
+		if(exchangeRates == null){
+			exchangeRates = exchangeRatesRepository.findFirstByOrderByDate();
+		}
 		return exchangeRates.getCurrencies();
 	}
 }

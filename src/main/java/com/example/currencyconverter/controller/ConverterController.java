@@ -9,6 +9,8 @@ import com.example.currencyconverter.service.CurrencyService;
 import com.example.currencyconverter.service.OperationHistoryService;
 import com.example.currencyconverter.service.UserService;
 import lombok.RequiredArgsConstructor;
+	import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import java.util.Set;
 @Controller
 @RequiredArgsConstructor
 public class ConverterController {
+	@Autowired
 	private final CurrencyService currencyService;
 	private final OperationHistoryService operationHistoryService;
 	private final UserService userService;
@@ -35,8 +38,10 @@ public class ConverterController {
 	}
 
 	@GetMapping("/converterPage")
-	public String converter(Model model) {
-		List<OperationHistory> operations = operationHistoryService.getAllOperationHistory();
+	public String converter(@Qualifier Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User user = userService.findUserByUsername(auth.getName());
+		List<OperationHistory> operations = operationHistoryService.getOperationHistoryByUser(user);
 		model.addAttribute("operations", operations);
 		return "converterPage";
 	}
@@ -53,7 +58,7 @@ public class ConverterController {
 	}
 
 	@GetMapping(value = "/currencies")
-	public ResponseEntity<Set<Currency>> getAllCurrencies() throws Exception {
+	public ResponseEntity<Set<Currency>> getAllCurrencies() {
 		return new ResponseEntity<>(currencyService.getAllCurrenciesByCurrentDate(), HttpStatus.OK);
 	}
 }
